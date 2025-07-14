@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: demo-tmi
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/demotmi
+    username: postgres
+    password: postgres
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
