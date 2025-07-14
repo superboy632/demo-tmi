@@ -18,7 +18,7 @@ interface RuleService {
 }
 
 @Service
-class DeafaultRuleService(
+class DefaultRuleService(
     private val rules: RuleRepository,
 ) : RuleService {
 
