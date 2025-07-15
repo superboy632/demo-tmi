@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.jetbrains.kotlin.kapt") version "1.9.21"
 }
 
 group = "com.example"
@@ -37,6 +38,8 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.16")
     implementation("ch.qos.logback:logback-classic:1.5.13")
 
+    implementation("org.mapstruct:mapstruct:${property("mapstructVersion")}")
+    kapt("org.mapstruct:mapstruct-processor:${property("mapstructVersion")}")
 
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 

@@ -1,3 +1,6 @@
+server:
+  port: 9090
+
 spring:
   application:
     name: demo-tmi
@@ -13,14 +16,10 @@ spring:
     bootstrap-servers: localhost:29092
     properties:
       security.protocol: PLAINTEXT
-      sasl.mechanism: null
-      sasl.jaas.config: null
-    producer:
-      properties:
-        allow.auto.create.topics: false
     consumer:
       auto-offset-reset: latest
       properties:
         allow.auto.create.topics: false
     listener:
       missing-topics-fatal: true
+debug: false

@@ -1,11 +1,14 @@
 package com.example.demotmi.controller
 
+import com.example.demotmi.mapper.RuleMapper
 import com.example.demotmi.persistence.Rule
 import com.example.demotmi.persistence.RuleRepository
 import com.example.demotmi.request.RuleCreateRequest
 import com.example.demotmi.response.RuleResponse
 import com.example.demotmi.service.RuleService
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,49 +29,33 @@ import java.util.UUID
 @RestController
 @RequestMapping("/rules")
 class RuleController (
-    private val ruleRepository: RuleRepository,
-    private val ruleService: RuleService
+    private val ruleService: RuleService,
+    private val ruleMapper: RuleMapper
 ) {
 
-    @PostMapping
+    @PostMapping("/create")
     suspend fun create(@RequestBody request: RuleCreateRequest) : ResponseEntity<RuleResponse> = coroutineScope {
-        val rule = Rule(
-            id = UUID.randomUUID(),
-            agentRuleId = request.agentRuleId,
-            agentType = request.agentType,
-            agentId = request.agentId,
-            deviceName = request.deviceName,
-            deviceId = request.deviceId,
-            deviceAddress = request.deviceAddress,
-        )
+        val result = ruleService.create(request)
+        val response = ruleMapper.toResponse(result)
+        ResponseEntity(response, HttpStatus.CREATED)
 
-        val result = ruleService.create(rule)
-        ResponseEntity.ok(result.toDto())
     }
 
-    @GetMapping("/get")
-    fun getAll(): Flux<Rule> = ruleRepository.findAll()
 
-    @GetMapping("/{id}")
-    fun getById(@PathVariable("id") id: UUID): Mono<RuleResponse> = ruleRepository.findById(id).map { i -> i.toDto() }
+    @GetMapping("/get/{id}")
+    suspend fun getById(@PathVariable("id") id: UUID): ResponseEntity<RuleResponse> = coroutineScope {
+        val rule = ruleService.findById(id)
+            ?: throw NoSuchElementException("Rule with this id=$id not found")
+        val response = ruleMapper.toResponse(rule)
+        ResponseEntity.ok(response)
+    }
 
-
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/delete/{id}")
     suspend fun deleteById(@PathVariable("id") id: UUID): ResponseEntity<Unit> = coroutineScope {
         ruleService.delete(id)
         ResponseEntity.noContent().build()
     }
 
-
-    fun Rule.toDto(): RuleResponse = RuleResponse(
-        id = this.id,
-        agentRuleId = this.agentRuleId,
-        agentType = this.agentType,
-        agentId = this.agentId,
-        deviceName = this.deviceName,
-        deviceId = this.deviceId,
-        deviceAddress = this.deviceAddress,
-    )
 }
 
 

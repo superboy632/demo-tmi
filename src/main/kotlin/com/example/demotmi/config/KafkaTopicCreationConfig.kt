@@ -11,7 +11,7 @@ class KafkaTopicCreationConfig {
     @Bean
     fun newTopics(): NewTopic {
         return TopicBuilder.name("rule-commands")
-            .partitions(3)
+            .partitions(1)
             .replicas(1)
             .build()
     }

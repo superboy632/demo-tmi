@@ -14,7 +14,7 @@ data class Rule (
 
     @Id
     @field:Column("id")
-    val id: UUID,
+    val id: UUID? = null,
 
     @field:Column("agent_rule_id")
     val agentRuleId: Int,
