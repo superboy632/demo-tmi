@@ -7,6 +7,8 @@ import com.example.demotmi.response.RuleResponse
 import com.example.demotmi.service.RuleService
 import kotlinx.coroutines.coroutineScope
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

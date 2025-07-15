@@ -8,3 +8,19 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.yaml
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    properties:
+      security.protocol: PLAINTEXT
+      sasl.mechanism: null
+      sasl.jaas.config: null
+    producer:
+      properties:
+        allow.auto.create.topics: false
+    consumer:
+      auto-offset-reset: latest
+      properties:
+        allow.auto.create.topics: false
+    listener:
+      missing-topics-fatal: true
