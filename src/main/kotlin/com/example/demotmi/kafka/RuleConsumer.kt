@@ -1,7 +1,6 @@
 package com.example.demotmi.kafka
 
 import com.example.demotmi.mapper.RuleMapper
-import com.example.demotmi.persistence.RuleRepository
 import com.example.demotmi.service.RuleService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging.logger
@@ -29,7 +28,6 @@ class DefaultRuleConsumer (
         val node = objectMapper.readTree(record.value())
         val type = node.get("type").asText()
         val message = node.get("message")
-
         when (type) {
             "create" -> {
                 val cmd = objectMapper.treeToValue(message, CreateRuleCommand::class.java)
@@ -44,7 +42,6 @@ class DefaultRuleConsumer (
                     }
                 }
             }
-
             "delete" -> {
                 val cmd = objectMapper.treeToValue(message, DeleteRuleCommand::class.java)
                 runBlocking {

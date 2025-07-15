@@ -15,6 +15,7 @@ data class RuleResponse (
 
     val deviceId: Int?,
 
-    val deviceAddress: String?
+    val deviceAddress: String?,
 
+    val active: Boolean,
 )

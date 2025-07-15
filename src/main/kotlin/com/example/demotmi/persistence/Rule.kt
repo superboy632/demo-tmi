@@ -1,6 +1,5 @@
 package com.example.demotmi.persistence
 
-
 import org.springframework.data.annotation.Id
 import org.springframework.data.domain.Persistable
 import org.springframework.data.r2dbc.repository.Query
@@ -35,22 +34,29 @@ data class Rule (
 
     @field:Column("device_address")
     val deviceAddress: String?,
-    @Transient
-    private val isNewEntity: Boolean = false
+
+    @field:Column("active")
+    val active: Boolean = true,
     ) : Persistable<UUID> {
+
+        @Transient
+        @field:Column("isNewEntity")
+        private var isNewEntity: Boolean = false
 
         override fun getId() = id
 
+        @Transient
         override fun isNew() = isNewEntity
 
-        fun asNew(): Rule = this.copy(isNewEntity = true)
+        fun asNew(): Rule {
+            this.isNewEntity = true
+            return this
+        }
     }
-
 
 interface RuleRepository : ReactiveCrudRepository<Rule, UUID> {
 
     @Query("select * from rule where id = :id")
     override fun findById(id: UUID): Mono<Rule>
-
 
 }
