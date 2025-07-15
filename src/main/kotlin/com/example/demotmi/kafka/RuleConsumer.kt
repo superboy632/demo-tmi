@@ -33,10 +33,10 @@ class DefaultRuleConsumer (
         when (type) {
             "create" -> {
                 val cmd = objectMapper.treeToValue(message, CreateRuleCommand::class.java)
-                val rule = ruleMapper.toRuleCreateRequest(cmd)
+                val request = ruleMapper.toRuleCreateRequest(cmd)
                 runBlocking {
                     runCatching {
-                        ruleService.create(rule)
+                        ruleService.create(request)
                     } .onSuccess {
                         logger { info("Successfully $type rule command") }
                     } .onFailure {

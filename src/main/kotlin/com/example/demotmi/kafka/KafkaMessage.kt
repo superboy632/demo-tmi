@@ -9,7 +9,6 @@ data class KafkaMessage<T> (
 
 
 data class CreateRuleCommand (
-    val id: UUID,
     val agentId: Int,
     val agentType: String
 )

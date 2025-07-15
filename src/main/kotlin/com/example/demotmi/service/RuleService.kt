@@ -21,6 +21,7 @@ interface RuleService {
 
     suspend fun findById(id: UUID): Rule?
 
+    suspend fun update(id: UUID, request: RuleCreateRequest): Rule
 }
 
 @Service
@@ -30,17 +31,17 @@ class DefaultRuleService(
 ) : RuleService {
 
     override suspend fun create(ruleCreateRequest: RuleCreateRequest): Rule {
-        val rule = ruleMapper.fromRequest(ruleCreateRequest)
-            .copy(id = UUID.randomUUID())
-//        val rule = Rule(
-//            UUID.randomUUID(),
-//            ruleCreateRequest.agentRuleId,
-//            ruleCreateRequest.agentType,
-//            ruleCreateRequest.agentId,
-//            ruleCreateRequest.deviceName,
-//            ruleCreateRequest.deviceId,
-//            ruleCreateRequest.deviceAddress
-//        )
+//        val rule = ruleMapper.fromRequest(ruleCreateRequest)
+//            .copy(id = UUID.randomUUID())
+        val rule = Rule(
+            UUID.randomUUID(),
+            ruleCreateRequest.agentRuleId,
+            ruleCreateRequest.agentType,
+            ruleCreateRequest.agentId,
+            ruleCreateRequest.deviceName,
+            ruleCreateRequest.deviceId,
+            ruleCreateRequest.deviceAddress
+        ).asNew()
         val saved = delegate.create(rule)
             .awaitSingle()
         logger { info("Rule saved: $saved") }
@@ -59,13 +60,31 @@ class DefaultRuleService(
         return rule
     }
 
+    override suspend fun update(id: UUID, request: RuleCreateRequest): Rule {
+        val existing = delegate.findById(id).awaitSingleOrNull()
+            ?: throw NoSuchElementException("Rule with id $id not found")
+        val updated = ruleMapper.fromRequest(request).copy(id = id)
+        return delegate.update(updated).awaitSingle()
+    }
+
     @Service
     class TransactionalRuleService (
         private val rules: RuleRepository,
         private val ruleRepository: RuleRepository
     ) {
         @Transactional
-        fun create(rule: Rule): Mono<Rule> = ruleRepository.save(rule)
+        fun update(rule: Rule): Mono<Rule> = ruleRepository.existsById(rule.id)
+            .flatMap { exists ->
+                if (!exists) Mono.error(NoSuchElementException("Rule not found"))
+                else ruleRepository.save(rule)
+            }
+
+        @Transactional
+        fun create(rule: Rule): Mono<Rule> = ruleRepository.existsById(rule.id)
+            .flatMap { exists ->
+                if (exists) Mono.error(NoSuchElementException("Rule already exists"))
+                else ruleRepository.save(rule)
+            }
 
         @Transactional
         fun delete(id: UUID): Mono<Void> = rules.deleteById(id)
