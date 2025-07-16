@@ -1,9 +1,9 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    kotlin("kapt") version "1.9.25"
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.jetbrains.kotlin.kapt") version "1.9.21"
 }
 
 group = "com.example"
@@ -32,7 +32,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
-    implementation("org.mapstruct:mapstruct:1.6.3")
     implementation("org.liquibase:liquibase-core")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
     implementation("org.slf4j:slf4j-api:2.0.16")
@@ -46,12 +45,17 @@ dependencies {
     runtimeOnly("org.postgresql:r2dbc-postgresql")
     runtimeOnly("org.postgresql:postgresql")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude("org.junit.vintage", "junit-vintage-engine")
+    }
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${property("mockitoKotlinVersion")}")
+
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("io.r2dbc:r2dbc-h2")
 }
 
 kotlin {

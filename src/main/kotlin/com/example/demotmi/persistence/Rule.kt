@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.data.annotation.Transient
+import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 import java.util.UUID
 
@@ -54,6 +55,7 @@ data class Rule (
         }
     }
 
+@Repository
 interface RuleRepository : ReactiveCrudRepository<Rule, UUID> {
 
     @Query("select * from rule where id = :id")

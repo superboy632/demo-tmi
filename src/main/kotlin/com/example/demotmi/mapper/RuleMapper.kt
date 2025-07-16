@@ -22,4 +22,5 @@ interface RuleMapper {
 
     @Mapping(target = "id", ignore = true )
     fun fromRequest(dto: RuleCreateRequest): Rule
+
 }

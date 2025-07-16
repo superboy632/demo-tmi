@@ -29,7 +29,7 @@ class DefaultExceptionHandler : ErrorWebExceptionHandler {
 
             is ResponseStatusException -> {
                 logger.error{"Response status error: ${t.localizedMessage}" }
-                exchange.response.statusCode = HttpStatus.BAD_REQUEST
+                exchange.response.statusCode = t.statusCode
             }
 
             is NoSuchElementException -> {
@@ -57,7 +57,7 @@ class DefaultExceptionHandler : ErrorWebExceptionHandler {
         val errorBody = mapOf(
             "status" to exchange.response.statusCode,
             "message" to t.localizedMessage,
-            "error" to exchange.response.statusCode,
+            "error" to exchange.response.headers.contentType.toString(),
         )
         val jsonBytes = jacksonObjectMapper().writeValueAsBytes(errorBody)
         val buffer = exchange.response.bufferFactory().wrap(jsonBytes)

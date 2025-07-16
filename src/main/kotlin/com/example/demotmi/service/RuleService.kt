@@ -45,6 +45,10 @@ class DefaultRuleService(
     }
 
     override suspend fun delete(ruleId: UUID) {
+        val rule = delegate.findById(ruleId)
+            .awaitSingleOrNull()
+            ?: throw NoSuchElementException("Rule with id $ruleId not found")
+        logger { info("Deleting rule: $rule") }
         val marked = delegate.delete(ruleId)
             .awaitSingleOrNull()
         logger { info("Rule deleted: $marked") }

@@ -11,7 +11,7 @@ data class RuleResponse (
 
     val agentId: Int,
 
-    val deviceName: String,
+    val deviceName: String?,
 
     val deviceId: Int?,
 
