@@ -37,4 +37,7 @@ databaseChangeLog:
             - column:
                 name: device_address
                 type: VARCHAR(255)
+            - column:
+                name: active
+                type: boolean
 

@@ -2,6 +2,7 @@ package com.example.demotmi.kafka
 
 import com.example.demotmi.mapper.RuleMapper
 import com.example.demotmi.service.RuleService
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging.logger
 import kotlinx.coroutines.runBlocking
@@ -27,11 +28,11 @@ class DefaultRuleConsumer (
     override fun consume(record: ConsumerRecord<String, String>) {
         val node = objectMapper.readTree(record.value())
         val type = node.get("type").asText()
-        val message = node.get("message")
+
         when (type) {
             "create" -> {
-                val cmd = objectMapper.treeToValue(message, CreateRuleCommand::class.java)
-                val request = ruleMapper.toRuleCreateRequest(cmd)
+                val message = objectMapper.readValue(record.value(), object: TypeReference<KafkaMessage<CreateRuleCommand>>() {})
+                val request = ruleMapper.toRuleCreateRequest(message.message)
                 runBlocking {
                     runCatching {
                         ruleService.create(request)
@@ -43,10 +44,10 @@ class DefaultRuleConsumer (
                 }
             }
             "delete" -> {
-                val cmd = objectMapper.treeToValue(message, DeleteRuleCommand::class.java)
+                val message = objectMapper.readValue(record.value(), object: TypeReference<KafkaMessage<DeleteRuleCommand>>() {})
                 runBlocking {
                     runCatching {
-                        ruleService.delete(cmd.id)
+                        ruleService.delete(message.message.id)
                     } .onSuccess {
                         logger { info("Successfully $type rule command") }
                     } .onFailure {

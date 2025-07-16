@@ -2,6 +2,11 @@ package com.example.demotmi.kafka
 
 import java.util.UUID
 
+data class KafkaMessage<T>(
+    val type: String,
+    val message: T
+)
+
 data class CreateRuleCommand (
     val agentId: Int,
     val agentType: String

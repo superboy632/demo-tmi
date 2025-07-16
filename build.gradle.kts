@@ -48,14 +48,16 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.junit.vintage", "junit-vintage-engine")
     }
+
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${property("coroutinesVersion")}")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:${property("wiremockVersion")}")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${property("mockitoKotlinVersion")}")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("io.r2dbc:r2dbc-h2")
+    testImplementation(kotlin("test"))
 }
 
 kotlin {
