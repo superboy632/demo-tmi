@@ -41,9 +41,6 @@ class RuleConsumerTest {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    private lateinit var ruleRepository: RuleRepository
-
     @MockitoBean
     private lateinit var ruleMapper: RuleMapper
 
