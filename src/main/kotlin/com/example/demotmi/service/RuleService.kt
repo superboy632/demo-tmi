@@ -3,10 +3,9 @@ package com.example.demotmi.service
 import com.example.demotmi.persistence.Rule
 import com.example.demotmi.persistence.RuleRepository
 import com.example.demotmi.request.RuleCreateRequest
-import io.github.oshai.kotlinlogging.KotlinLogging.logger
-import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.slf4j.helpers.Reporter.info
+import mu.KLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -40,7 +39,7 @@ class DefaultRuleService(
         ).asNew()
         val saved = delegate.create(rule)
             .awaitSingle()
-        logger { info("Rule saved: $saved") }
+        logger.info { "Rule saved: $saved" }
         return saved
     }
 
@@ -48,10 +47,10 @@ class DefaultRuleService(
         val rule = delegate.findById(ruleId)
             .awaitSingleOrNull()
             ?: throw NoSuchElementException("Rule with id $ruleId not found")
-        logger { info("Deleting rule: $rule") }
-        val marked = delegate.delete(ruleId)
+        logger.info { "Deleting rule: $rule" }
+        delegate.delete(ruleId)
             .awaitSingleOrNull()
-        logger { info("Rule deleted: $marked") }
+        logger.info { "Rule deleted: $ruleId " }
     }
 
     override suspend fun findById(id: UUID): Rule {
@@ -84,4 +83,5 @@ class DefaultRuleService(
         @Transactional(readOnly = true)
         fun findById(id: UUID): Mono<Rule> = ruleRepository.findById(id)
     }
+    companion object : KLogging()
 }

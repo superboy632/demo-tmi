@@ -1,10 +1,7 @@
 package com.example.demotmi.controller
 
+import com.example.demotmi.Fixtures
 import com.example.demotmi.mapper.RuleMapper
-import com.example.demotmi.persistence.Rule
-import com.example.demotmi.persistence.RuleRepository
-import com.example.demotmi.request.RuleCreateRequest
-import com.example.demotmi.response.RuleResponse
 import com.example.demotmi.service.RuleService
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
@@ -18,13 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.server.ResponseStatusException
-import java.util.UUID
-
 
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = [
+        RuleController::class,
+        DefaultExceptionHandler::class
+    ]
 )
 @EnableAutoConfiguration(
     exclude = [
@@ -46,25 +44,8 @@ class RuleControllerTest {
 
     @Test
     fun shouldGetRuleById() = runTest {
-        val rule = Rule(
-            id = UUID.randomUUID(),
-            agentRuleId = 101,
-            agentType = "BOT",
-            agentId = 55,
-            deviceName = "Sensor-X",
-            deviceId = 9001,
-            deviceAddress = "192.168.0.101"
-        )
-        val response = RuleResponse(
-            rule.id,
-            rule.agentRuleId,
-            rule.agentType,
-            rule.agentId,
-            rule.deviceName,
-            rule.deviceId,
-            rule.deviceAddress,
-            active = true
-        )
+        val rule = Fixtures.rule()
+        val response = Fixtures.createRuleResponse(rule)
 
         whenever(rules.findById(rule.id)).thenReturn(rule)
         whenever(ruleMapper.toResponse(rule)).thenReturn(response)
@@ -79,31 +60,9 @@ class RuleControllerTest {
 
     @Test
     fun shouldCreateRule() = runTest {
-        val request = RuleCreateRequest(agentRuleId = 101,
-            agentType = "BOT",
-            agentId = 55,
-            deviceName = "Sensor-X",
-            deviceId = 9001,
-            deviceAddress = "192.168.0.101")
-        val rule = Rule(
-            id = UUID.randomUUID(),
-            agentRuleId = 101,
-            agentType = "BOT",
-            agentId = 55,
-            deviceName = "Sensor-X",
-            deviceId = 9001,
-            deviceAddress = "192.168.0.101"
-        )
-        val response = RuleResponse(
-            rule.id,
-            rule.agentRuleId,
-            rule.agentType,
-            rule.agentId,
-            rule.deviceName,
-            rule.deviceId,
-            rule.deviceAddress,
-            active = true
-        )
+        val request = Fixtures.ruleCreateRequest()
+        val rule = Fixtures.rule()
+        val response = Fixtures.createRuleResponse(rule.id, rule)
 
         whenever(rules.create(request)).thenReturn(rule)
         whenever(ruleMapper.toResponse(rule)).thenReturn(response)
@@ -119,26 +78,8 @@ class RuleControllerTest {
 
     @Test
     fun shouldUpdateRule() = runTest {
-
-        val rule = Rule(
-            id = UUID.randomUUID(),
-            agentRuleId = 101,
-            agentType = "BOT",
-            agentId = 55,
-            deviceName = "Sensor-X",
-            deviceId = 9001,
-            deviceAddress = "192.168.0.101"
-        )
-        val response = RuleResponse(
-            rule.id,
-            rule.agentRuleId,
-            rule.agentType,
-            rule.agentId,
-            rule.deviceName,
-            rule.deviceId,
-            rule.deviceAddress,
-            active = true
-        )
+        val rule = Fixtures.rule()
+        val response = Fixtures.createRuleResponse(rule.id, rule)
 
         whenever(rules.update(rule.id)).thenReturn(rule)
         whenever(ruleMapper.toResponse(rule)).thenReturn(response)
@@ -153,19 +94,9 @@ class RuleControllerTest {
 
     @Test
     fun shouldDeleteRule() = runTest {
-
-        val rule = Rule(
-            id = UUID.randomUUID(),
-            agentRuleId = 101,
-            agentType = "BOT",
-            agentId = 55,
-            deviceName = "Sensor-X",
-            deviceId = 9001,
-            deviceAddress = "192.168.0.101"
-        )
+        val rule = Fixtures.rule()
 
         whenever(rules.delete(rule.id)).thenReturn(null)
-
 
         webTestClient.delete()
             .uri("rules/delete/{id}", rule.id)
@@ -177,7 +108,6 @@ class RuleControllerTest {
     @Test
     @Suppress("ReactiveStreamsUnusedPublisher")
     fun shouldReceiveBadRequest() {
-
         webTestClient.delete()
             .uri("/rules/delete/123")
             .exchange()

@@ -10,7 +10,10 @@ spring:
     password: postgres
   liquibase:
     enabled: true
-    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    url: jdbc:postgresql://localhost:5432/demotmi
+    user: postgres
+    password: postgres
+    change-log: db/changelog/db.changelog-master.yaml
 
   kafka:
     bootstrap-servers: localhost:29092
@@ -22,4 +25,8 @@ spring:
         allow.auto.create.topics: false
     listener:
       missing-topics-fatal: true
+
+logging:
+  level:
+    liquibase=DEBUG:
 debug: false

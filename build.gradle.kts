@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.9.25"
-    kotlin("plugin.spring") version "1.9.25"
-    kotlin("kapt") version "1.9.25"
+    kotlin("jvm") version "2.1.0"
+    kotlin("plugin.spring") version "2.1.0"
+    kotlin("kapt") version "2.1.0"
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -9,11 +9,8 @@ plugins {
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-
+kotlin {
+    jvmToolchain(21)
 }
 repositories {
     mavenCentral()
@@ -29,18 +26,14 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${property("coroutinesVersion")}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${property("coroutinesVersion")}")
 
     implementation("org.liquibase:liquibase-core")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
-    implementation("org.slf4j:slf4j-api:2.0.16")
-    implementation("ch.qos.logback:logback-classic:1.5.13")
+    implementation("io.github.microutils:kotlin-logging:${property("kotlinLoggingVersion")}")
 
     implementation("org.mapstruct:mapstruct:${property("mapstructVersion")}")
     kapt("org.mapstruct:mapstruct-processor:${property("mapstructVersion")}")
-
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     runtimeOnly("org.postgresql:r2dbc-postgresql")
     runtimeOnly("org.postgresql:postgresql")
@@ -52,12 +45,9 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${property("coroutinesVersion")}")
     testImplementation("org.springframework.kafka:spring-kafka-test")
-    testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:${property("wiremockVersion")}")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${property("mockitoKotlinVersion")}")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("io.r2dbc:r2dbc-h2")
-    testImplementation(kotlin("test"))
 }
 
 kotlin {

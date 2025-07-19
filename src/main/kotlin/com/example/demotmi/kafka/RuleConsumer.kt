@@ -4,8 +4,8 @@ import com.example.demotmi.mapper.RuleMapper
 import com.example.demotmi.service.RuleService
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.oshai.kotlinlogging.KotlinLogging.logger
 import kotlinx.coroutines.runBlocking
+import mu.KLogging
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.helpers.Reporter.info
 import org.springframework.kafka.annotation.KafkaListener
@@ -24,7 +24,7 @@ class DefaultRuleConsumer (
     private val ruleMapper: RuleMapper
 ) : RuleConsumer {
 
-    @KafkaListener(topics = ["rule-commands"], groupId = "rule-group")
+    @KafkaListener(topics = ["rule-commands"], groupId = "rule-group", id = LISTENER_ID)
     override fun consume(record: ConsumerRecord<String, String>) {
         val node = objectMapper.readTree(record.value())
         val type = node.get("type").asText()
@@ -33,13 +33,14 @@ class DefaultRuleConsumer (
             "create" -> {
                 val message = objectMapper.readValue(record.value(), object: TypeReference<KafkaMessage<CreateRuleCommand>>() {})
                 val request = ruleMapper.toRuleCreateRequest(message.message)
+                logger.info { "Rule create request: $request" }
                 runBlocking {
                     runCatching {
                         ruleService.create(request)
                     } .onSuccess {
-                        logger { info("Successfully $type rule command") }
+                        logger.info { info("Successfully $type rule command") }
                     } .onFailure {
-                        logger { error("Failed to $type rule command") }
+                        logger.info { error("Failed to $type rule command") }
                     }
                 }
             }
@@ -49,12 +50,15 @@ class DefaultRuleConsumer (
                     runCatching {
                         ruleService.delete(message.message.id)
                     } .onSuccess {
-                        logger { info("Successfully $type rule command") }
+                        logger.info { info("Successfully $type rule command") }
                     } .onFailure {
-                        logger { error("Failed to $type rule command") }
+                        logger.info { error("Failed to $type rule command") }
                     }
                 }
             }
         }
+    }
+    companion object : KLogging() {
+        const val LISTENER_ID = "task-feedback-consumer"
     }
 }
