@@ -62,7 +62,7 @@ class RuleControllerTest {
     fun shouldCreateRule() = runTest {
         val request = Fixtures.ruleCreateRequest()
         val rule = Fixtures.rule()
-        val response = Fixtures.createRuleResponse(rule.id, rule)
+        val response = Fixtures.createRuleResponse(rule)
 
         whenever(rules.create(request)).thenReturn(rule)
         whenever(ruleMapper.toResponse(rule)).thenReturn(response)
@@ -79,7 +79,7 @@ class RuleControllerTest {
     @Test
     fun shouldUpdateRule() = runTest {
         val rule = Fixtures.rule()
-        val response = Fixtures.createRuleResponse(rule.id, rule)
+        val response = Fixtures.createRuleResponse(rule)
 
         whenever(rules.update(rule.id)).thenReturn(rule)
         whenever(ruleMapper.toResponse(rule)).thenReturn(response)

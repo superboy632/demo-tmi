@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeSet gnikitin:rule-01
+--changeSet gnikitin:rule-02
 CREATE TABLE rule
 (
     id uuid primary key not null,

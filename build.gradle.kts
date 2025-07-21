@@ -42,7 +42,6 @@ dependencies {
         exclude("org.junit.vintage", "junit-vintage-engine")
     }
 
-    testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${property("coroutinesVersion")}")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:${property("mockitoKotlinVersion")}")
